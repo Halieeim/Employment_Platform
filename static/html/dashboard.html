@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employment Platform</title>
+    <link rel="stylesheet" href="../css/dashboardStyle.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-options">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/postjob">Post a Job</a></li>
+                <li><a href="/myprofile">Profile</a></li>
+                <li><a href="/applicantspage">Applicants</a></li>
+                <li><a href="/showemployees">Employees</a></li>
+                <li><a href="/logout">Logout</a></li>
+                <li>
+                    <form class="search-form" action="/search" method="GET">
+                        <input id="title" type="text" name="title" placeholder="Title">
+                        <input id="location" type="text" name="location" placeholder="Location">
+                        <input id="experience_level" type="text" name="experience" placeholder="Experience Level">
+                        <input id="company" type="text" name="company" placeholder="company">
+                        <!-- <input type="text" name="jobId" placeholder="Job ID"> -->
+                        <button onclick="filterPosts(event)" type="submit">Search</button>
+                    </form>
+                </li>
+                
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <!-- <h1>Welcome to the Employment Platform</h1> -->
+        <div id="posts-container" class="posts-container">
+            <!-- Posts will be dynamically inserted here -->
+        </div>
+    </div>
+    
+    <script>
+        async function fetchPosts() {
+            try {
+                const response = await fetch('/getposts');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const posts = await response.json();
+                renderPosts(posts);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        async function filterPosts(event) {
+            event.preventDefault();
+            const filters = {
+                "title": document.getElementById("title").value,
+                "location": document.getElementById("location").value,
+                "experience_level": document.getElementById("experience_level").value,
+                "company": document.getElementById("company").value
+            }
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(filters)
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const posts = await response.json();
+                renderPosts(posts);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        function renderPosts(posts) {
+            const postsContainer = document.getElementById('posts-container');
+            postsContainer.innerHTML = '';
+
+            posts.forEach(post => {
+                const postCard = document.createElement('div');
+                postCard.classList.add('post-card');
+
+                postCard.innerHTML = `
+                    <h2>${post.title}</h2>
+                    <h3>${post.company}</h3>
+                    <p>${post.description}</p>
+                    <p><strong>Location:</strong> ${post.location}</p>
+                    <p><strong>Experience Level:</strong> ${post.experience_level}</p>
+                    <a href="/applicationform" onclick="handleClick(event, '${post.company}', '${post.id}')"><strong>Application Form</strong></a>
+                    <!-- <p><strong>Programming Languages:</strong> ${post.programming_languages}</p> -->
+                `;
+
+                postsContainer.appendChild(postCard);
+            });
+        }
+
+        async function handleClick(event, company, id) {
+            // event.preventDefault();
+            const response = await fetch("/passdata", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "company":company, "job_id":id })
+            });
+            if(!response.ok){
+                alert("Something Wrong happened!!!");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchPosts);
+    </script>
+</body>
+</html>

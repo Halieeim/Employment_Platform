@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employment Platform</title>
+    <link rel="stylesheet" href="../css/dashboardStyle.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-options">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/postjob">Post a Job</a></li>
+                <li><a href="/applicantspage">applicants</a></li>
+                <li><a href="/logout">Logout</a></li>
+                <li>
+                    <form class="search-form" action="/searchemployees" method="GET">
+                        <!-- <input id="title" type="text" name="title" placeholder="Title"> -->
+                        <input id="location" type="text" name="location" placeholder="Location">
+                        <input id="experience_level" type="text" name="experience" placeholder="Experience Level">
+                        <!-- <input id="company" type="text" name="company" placeholder="company"> -->
+                        <!-- <input type="text" name="jobId" placeholder="Job ID"> -->
+                        <button onclick="filterEmployees(event)" type="submit">Search</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div id="employees-container" class="employees-container"></div>
+    </div>
+    
+    <script>
+        async function fetchEmployees() {
+            try {
+                const response = await fetch('/getallemployees');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const employees = await response.json();
+                renderEmployees(employees);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        async function filterEmployees(event) {
+            event.preventDefault();
+            const filters = {
+                "location": document.getElementById("location").value,
+                "experience_level": document.getElementById("experience_level").value
+            }
+
+            try {
+                const response = await fetch('/searchemployees', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(filters)
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const employees = await response.json();
+                renderEmployees(employees);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        function renderEmployees(employees) {
+            const employeesContainer = document.getElementById('employees-container');
+            employeesContainer.innerHTML = '';
+
+            employees.forEach(employee => {
+                const employeeCard = document.createElement('div');
+                employeeCard.classList.add('employee-card');
+
+                employeeCard.innerHTML = `
+                    <h2>${employee.name}</h2>
+                    <h3>${employee.bio}</h3>
+                    <p>${employee.email}</p>
+                    <p><strong>Location:</strong> ${employee.city}</p>
+                    <p><strong>Experience Level:</strong> ${employee.experience_level}</p>`;
+
+                employeesContainer.appendChild(employeeCard);
+            });
+        }
+
+        // async function handleClick(event, company, id) {
+        //     // event.preventDefault();
+        //     const response = await fetch("/passdata", {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({ "company":company, "job_id":id })
+        //     });
+        //     if(!response.ok){
+        //         alert("Something Wrong happened!!!");
+        //     }
+        // }
+
+        document.addEventListener('DOMContentLoaded', fetchEmployees);
+    </script>
+</body>
+</html>

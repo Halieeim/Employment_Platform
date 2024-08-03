@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job</title>
+    <link rel="stylesheet" href="../css/postjobStyle.css">
+    <link rel="stylesheet" href="../css/dashboardStyle.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-options">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/showemployees">Employees</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1>Post a New Job</h1>
+        <form id="jobForm">
+            <label for="title">Job Title:</label>
+            <input type="text" id="title" name="title" required>
+            
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" required>
+            
+            <label for="experience">Experience Level:</label>
+            <input type="text" id="experience" name="experience" required>
+            
+            <label for="description">Job Description:</label>
+            <textarea id="description" name="description" required></textarea>
+            
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company" required>
+            
+            <button type="submit">Post Job</button>
+        </form>
+    </div>
+
+    <script src="../js/postjob.js"></script>
+</body>
+</html>

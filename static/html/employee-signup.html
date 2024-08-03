@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Sign Up</title>
+    <link rel="stylesheet" href="../css/employeeSignUpStyle.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Employee Sign Up</h1>
+        <form id="signupForm">
+            <label for="nationalId">National ID:</label>
+            <input type="text" id="nationalId" name="nationalId" required>
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="experienceLevel">Experience Level:</label>
+            <select id="experienceLevel" name="experienceLevel" required>
+                <option value="" disabled selected>Select your experience level</option>
+                <option value="Fresh">Fresh</option>
+                <option value="Junior">Junior</option>
+                <option value="Mid">Mid</option>
+                <option value="Senior">Senior</option>
+            </select>
+
+            <label for="programmingLanguages">Programming Languages:</label>
+            <input type="text" id="programmingLanguages" name="programmingLanguages" required>
+
+            <label for="biography">Biography:</label>
+            <textarea id="biography" name="biography" rows="4" required></textarea>
+
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="/signinemployee">Sign In</a></p>
+    </div>
+    <script src="../js/employeeSignUp.js"></script>
+</body>
+</html>

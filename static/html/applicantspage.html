@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicants</title>
+    <link rel="stylesheet" href="../css/dashboardStyle.css">
+    <link rel="stylesheet" href="../css/applicantsStyle.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-options">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/postjob">Post a Job</a></li>
+                <li><a href="/showemployees">Employees</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Job Applicants</h1>
+        <div id="applicantsList" class="applicants-list"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/getapplicants');
+                if (!response.ok) throw new Error('Failed to fetch applicants');
+                const applicants = await response.json();
+
+                const applicantsList = document.getElementById('applicantsList');
+                applicants.forEach(applicant => {
+                    const applicantCard = document.createElement('div');
+                    applicantCard.className = 'applicant-card';
+
+                    if(applicant.status === 'pending'){
+                        applicantCard.innerHTML = `
+                        <h3>Job Title: ${applicant.job_title}</h3>
+                        <p><strong>Company:</strong> ${applicant.company}</p>
+                        <p><strong>Location:</strong> ${applicant.location}</p>
+                        <p><strong>Mobile:</strong> ${applicant.mobile}</p>
+                        <p><strong>Email:</strong> ${applicant.email}</p>
+                        <p><strong>Motivation Letter:</strong> ${applicant.motivation_letter}</p>
+                        <p id="status-${applicant.job_id}-${applicant.national_id}"><strong>Status:</strong> ${applicant.status}</p>
+                        <div class="card-buttons">
+                            <button onclick="viewProfile('${applicant.national_id}')">View Profile</button>
+                            <button onclick="updateStatus('${applicant.job_id}', '${applicant.national_id}', 'accepted', 'status-${applicant.job_id}-${applicant.national_id}', this)">Accept</button>
+                            <button onclick="updateStatus('${applicant.job_id}', '${applicant.national_id}', 'rejected', 'status-${applicant.job_id}-${applicant.national_id}', this)">Reject</button>
+                        </div>`;
+                    }
+                    else {
+                        applicantCard.innerHTML = `
+                        <h3>Job Title: ${applicant.job_title}</h3>
+                        <p><strong>Company:</strong> ${applicant.company}</p>
+                        <p><strong>Location:</strong> ${applicant.location}</p>
+                        <p><strong>Mobile:</strong> ${applicant.mobile}</p>
+                        <p><strong>Email:</strong> ${applicant.email}</p>
+                        <p><strong>Motivation Letter:</strong> ${applicant.motivation_letter}</p>
+                        <p id="status-${applicant.job_id}-${applicant.national_id}"><strong>Status:</strong> ${applicant.status}</p>
+                        <div class="card-buttons">
+                            <button onclick="viewProfile('${applicant.national_id}')">View Profile</button>
+                        </div>`;
+                    }
+
+                    applicantsList.appendChild(applicantCard);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load applicants. Please try again.');
+            }
+        });
+
+        async function viewProfile(applicantId) {
+            await fetch("/passdata", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "employee_id": applicantId })
+            })
+
+            await fetch("/increaseprofileviews", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "employee_id": applicantId })
+            })
+
+            window.location.href = '/fetchemployee';
+        }
+
+        async function updateStatus(job_id, national_id, status, status_id, button) {
+            try {
+                const response = await fetch(`/updatestatus`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ job_id, national_id, status })
+                });
+
+                if (!response.ok) throw new Error('Failed to update status');
+
+                document.getElementById(status_id).textContent = status;
+
+                // Hide the Accept and Reject buttons
+                const buttons = button.parentElement.querySelectorAll('button');
+                buttons.forEach(btn => {
+                    if (btn !== button.parentElement.querySelector('button:first-child')) {
+                        btn.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to update status. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

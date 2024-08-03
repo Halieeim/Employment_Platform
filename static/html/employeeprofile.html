@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile</title>
+    <link rel="stylesheet" href="../css/dashboardStyle.css">
+    <link rel="stylesheet" href="../css/employeeprofileStyle.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-options">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/logout">Logout</a></li>
+                <li><a href="/myprofile">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1>Employee Profile</h1>
+        <div class="profile-section">
+            <h2>Profile Information</h2>
+            <p><strong>Name:</strong> <span id="employeeName"></span></p>
+            <p><strong>Email:</strong> <span id="employeeEmail"></span></p>
+            <p><strong>City:</strong> <span id="employeeCity"></span></p>
+            <p><strong>Bio:</strong> <span id="employeeBio"></span></p>
+            <p><strong>Experience Level:</strong> <span id="employeeExperience"></span></p>
+            <p><strong>Programming Languages:</strong> <span id="employeeLanguages"></span></p>
+            <p><strong>Profile Views:</strong> <span id="profile_views"></span></p>
+        </div>
+        <div class="applications-section">
+            <h2>Job Applications</h2>
+            <ul id="applicationsList"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const profileResponse = await fetch('/profile');
+                if (!profileResponse.ok) throw new Error('Failed to fetch profile data');
+                const profileData = await profileResponse.json();
+
+                document.getElementById('employeeName').textContent = profileData[0].name;
+                document.getElementById('employeeEmail').textContent = profileData[0].email;
+                document.getElementById('employeeCity').textContent = profileData[0].city;
+                document.getElementById('employeeBio').textContent = profileData[0].bio;
+                document.getElementById('employeeExperience').textContent = profileData[0].experience_level;
+                document.getElementById('employeeLanguages').textContent = profileData[0].programming_languages;
+                document.getElementById('profile_views').textContent = profileData[0].profile_views;
+
+
+                const applicationsResponse = await fetch('/applications');
+                if (!applicationsResponse.ok) throw new Error('Failed to fetch applications');
+                const applicationsData = await applicationsResponse.json();
+
+                const applicationsList = document.getElementById('applicationsList');
+                applicationsList.innerHTML = '';
+                applicationsData.forEach(application => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${application.title} at ${application.company} - Status: ${application.status}`;
+                
+                // Set the class based on the application status
+                if (application.status === 'pending') {
+                    listItem.classList.add('status-pending');
+                } else if (application.status === 'accepted') {
+                    listItem.classList.add('status-accepted');
+                } else if (application.status === 'rejected') {
+                    listItem.classList.add('status-rejected');
+                }
+
+                applicationsList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load profile. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

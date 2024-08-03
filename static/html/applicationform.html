@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for a Job</title>
+    <link rel="stylesheet" href="../css/dashboardStyle.css">
+    <link rel="stylesheet" href="../css/applicationformStyle.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-options">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1>Apply for a Job</h1>
+        <form id="applicationForm">
+            <label for="mobile">Mobile Number:</label>
+            <input type="text" id="mobile" name="mobile" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="motivation_letter">Motivation Letter:</label>
+            <textarea id="motivation_letter" name="motivation_letter" required></textarea>
+            
+            <button type="submit">Apply</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('applicationForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const applicationData = {
+                "mobile": document.getElementById('mobile').value,
+                "email": document.getElementById('email').value,
+                "motivation_letter": document.getElementById('motivation_letter').value,
+            };
+
+            try {
+                const response = await fetch("/applytojob", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(applicationData),
+                });
+
+                if (response.ok) {
+                    alert('Application submitted successfully!');
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Failed to submit application. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to submit application becuase something is wrong. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
